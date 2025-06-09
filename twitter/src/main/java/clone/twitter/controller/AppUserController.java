@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.UUID;
 
-// TODO: Exception Handling
 @RestController
 public class AppUserController {
 
@@ -41,8 +40,8 @@ public class AppUserController {
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
-        if (appUserService.deleteAppUser(id)) return ResponseEntity.noContent().build();
-        else return ResponseEntity.badRequest().build();
+        appUserService.deleteAppUser(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

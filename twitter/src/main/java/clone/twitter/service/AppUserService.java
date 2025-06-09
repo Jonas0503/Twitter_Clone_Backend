@@ -1,6 +1,8 @@
 package clone.twitter.service;
 
 import clone.twitter.dto.AppUserDTO;
+import clone.twitter.exceptions.EntityAlreadyExistsException;
+import clone.twitter.exceptions.EntityNotFoundException;
 import clone.twitter.models.AppUser;
 import clone.twitter.repo.AppUserRepository;
 import jakarta.transaction.Transactional;
@@ -70,11 +72,10 @@ public class AppUserService {
         return appUserList;
     }
 
-    // TODO: Exception Handling
     @Transactional
     public AppUserDTO createAppUser(AppUserDTO appUserDTO) {
         if (appUserRepository.existsById(appUserDTO.getId())) {
-            throw new RuntimeException("AppUser already exists!");
+            throw new EntityAlreadyExistsException(appUserDTO.getId());
         }
         else {
             AppUser appUserToCreate = mapToAppUserEntity(appUserDTO);
@@ -89,7 +90,7 @@ public class AppUserService {
         Optional<AppUser> appUserOptional = appUserRepository.findById(uuid);
 
         if (appUserOptional.isEmpty()) {
-            throw new RuntimeException("Exception Handling not yet implemented! AppUser does not exist!");
+            throw new EntityNotFoundException(uuid);
         }
         else {
             AppUser appUser = appUserOptional.get();
@@ -106,18 +107,17 @@ public class AppUserService {
             return mapToAppUserDTO(updatedAppUser);
         }
         else {
-            throw new RuntimeException("AppUser does not exist!");
+            throw new EntityNotFoundException(appUserDTO.getId());
         }
     }
 
     @Transactional
-    public boolean deleteAppUser(UUID uuid) {
+    public void deleteAppUser(UUID uuid) {
         if (appUserRepository.existsById(uuid)) {
             appUserRepository.deleteById(uuid);
-            return true;
         }
         else {
-            return false;
+            throw new EntityNotFoundException(uuid);
         }
     }
 }

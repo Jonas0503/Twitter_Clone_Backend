@@ -1,6 +1,8 @@
 package clone.twitter.service;
 
 import clone.twitter.dto.PostDTO;
+import clone.twitter.exceptions.EntityAlreadyExistsException;
+import clone.twitter.exceptions.EntityNotFoundException;
 import clone.twitter.models.Post;
 import clone.twitter.repo.PostRepository;
 import jakarta.transaction.Transactional;
@@ -82,11 +84,10 @@ public class PostService {
         return postList;
     }
 
-    // TODO: Exception Handling
     @Transactional
     public PostDTO createPost(PostDTO postDTO) {
         if (postRepository.existsById(postDTO.getId())) {
-            throw new RuntimeException("Post already exists!");
+            throw new EntityAlreadyExistsException(postDTO.getId());
         }
         else {
             Post post = mapToPostEntity(postDTO);
@@ -101,7 +102,7 @@ public class PostService {
         Optional<Post> postOptional = postRepository.findById(uuid);
 
         if (postOptional.isEmpty()) {
-            throw new RuntimeException("Exception Handling not yet implemented! AppUser does not exists!");
+            throw new EntityNotFoundException(uuid);
         }
         else {
             Post post = postOptional.get();
@@ -118,18 +119,17 @@ public class PostService {
             return mapToPostDTO(updatedPost);
         }
         else {
-            throw new RuntimeException("Post does not exist!");
+            throw new EntityNotFoundException(postDTO.getId());
         }
     }
 
     @Transactional
-    public boolean deletePost(UUID uuid) {
+    public void deletePost(UUID uuid) {
         if (postRepository.existsById(uuid)) {
             postRepository.deleteById(uuid);
-            return true;
         }
         else {
-            return false;
+            throw new EntityNotFoundException(uuid);
         }
     }
 }
