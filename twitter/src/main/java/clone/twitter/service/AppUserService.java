@@ -5,71 +5,27 @@ import clone.twitter.exceptions.EntityAlreadyExistsException;
 import clone.twitter.exceptions.EntityNotFoundException;
 import clone.twitter.models.AppUser;
 import clone.twitter.repo.AppUserRepository;
+import clone.twitter.service.mapping.MapToDto;
+import clone.twitter.service.mapping.MapToEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class AppUserService {
 
-    private PostService postService;
+    private MapToEntity mapToEntity;
+    private MapToDto mapToDto;
     private AppUserRepository appUserRepository;
 
     @Autowired
-    public AppUserService(PostService postService, AppUserRepository appUserRepository) {
-        this.postService = postService;
+    public AppUserService(MapToEntity mapToEntity, MapToDto mapToDto, AppUserRepository appUserRepository) {
+        this.mapToEntity = mapToEntity;
+        this.mapToDto = mapToDto;
         this.appUserRepository = appUserRepository;
-    }
-
-    public AppUserDTO mapToAppUserDTO(AppUser appUser) {
-        AppUserDTO appUserDTO = new AppUserDTO();
-
-        appUserDTO.setId(appUser.getId());
-        appUserDTO.setImgPath(appUser.getImgPath());
-        appUserDTO.setUsername(appUser.getUsername());
-        appUserDTO.setPosts(postService.createPostDTOList(appUser.getPosts()));
-        appUserDTO.setLikedPosts(postService.createPostDTOList(appUser.getLikedPosts()));
-        appUserDTO.setDislikedPosts(postService.createPostDTOList(appUser.getDislikedPosts()));
-
-        return appUserDTO;
-    }
-
-    public AppUser mapToAppUserEntity(AppUserDTO appUserDTO) {
-        AppUser appUser = new AppUser();
-
-        appUser.setId(appUserDTO.getId());
-        appUser.setImgPath(appUserDTO.getImgPath());
-        appUser.setUsername(appUserDTO.getUsername());
-        appUser.setPosts(postService.createPostEntityList(appUserDTO.getPosts()));
-        appUser.setLikedPosts(postService.createPostEntityList(appUserDTO.getLikedPosts()));
-        appUser.setDislikedPosts(postService.createPostEntityList(appUserDTO.getDislikedPosts()));
-
-        return appUser;
-    }
-
-    public List<AppUserDTO> createAppUserDTOList(List<AppUser> appUserList) {
-        List<AppUserDTO> appUserDTOList = new ArrayList<>();
-
-        for (AppUser appUser : appUserList) {
-            appUserDTOList.add(mapToAppUserDTO(appUser));
-        }
-
-        return appUserDTOList;
-    }
-
-    public List<AppUser> createAppUserEntityList(List<AppUserDTO> appUserDTOList) {
-        List<AppUser> appUserList = new ArrayList<>();
-
-        for (AppUserDTO appUserDTO : appUserDTOList) {
-            appUserList.add(mapToAppUserEntity(appUserDTO));
-        }
-
-        return appUserList;
     }
 
     @Transactional
@@ -78,10 +34,11 @@ public class AppUserService {
             throw new EntityAlreadyExistsException(appUserDTO.getId());
         }
         else {
-            AppUser appUserToCreate = mapToAppUserEntity(appUserDTO);
+            AppUser appUserToCreate = mapToEntity.mapToAppUserEntity(appUserDTO);
+            appUserToCreate.setId(null);
             AppUser createdAppUser = appUserRepository.save(appUserToCreate);
 
-            return mapToAppUserDTO(createdAppUser);
+            return mapToDto.mapToAppUserDTO(createdAppUser);
         }
     }
 
@@ -94,17 +51,17 @@ public class AppUserService {
         }
         else {
             AppUser appUser = appUserOptional.get();
-            return mapToAppUserDTO(appUser);
+            return mapToDto.mapToAppUserDTO(appUser);
         }
     }
 
     @Transactional
     public AppUserDTO updateAppUser(AppUserDTO appUserDTO) {
         if (appUserRepository.existsById(appUserDTO.getId())) {
-            AppUser appUser = mapToAppUserEntity(appUserDTO);
+            AppUser appUser = mapToEntity.mapToAppUserEntity(appUserDTO);
             AppUser updatedAppUser = appUserRepository.save(appUser);
 
-            return mapToAppUserDTO(updatedAppUser);
+            return mapToDto.mapToAppUserDTO(updatedAppUser);
         }
         else {
             throw new EntityNotFoundException(appUserDTO.getId());

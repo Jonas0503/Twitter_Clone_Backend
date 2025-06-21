@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Table(name = "post")
+@Table(name = "tweet")
 @Entity
 @Data
-public class Post {
+public class Tweet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,7 +30,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "app_user_id")
     )
-    private List<AppUser> liked;
+    private List<AppUser> liked = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -37,12 +38,12 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "app_user_id")
     )
-    private List<AppUser> disliked;
+    private List<AppUser> disliked = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private Post parent;
+    private Tweet parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> comments;
+    private List<Tweet> comments = new ArrayList<>();
 }

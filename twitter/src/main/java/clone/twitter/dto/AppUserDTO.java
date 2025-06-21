@@ -14,9 +14,9 @@ public class AppUserDTO {
 
     private String username;
 
-    private List<PostDTO> posts;
+    private List<TweetDTO> createdTweets;
 
-    private List<PostDTO> likedPosts;
+    private List<TweetDTO> likedTweets;
 
-    private List<PostDTO> dislikedPosts;
+    private List<TweetDTO> dislikedTweets;
 }

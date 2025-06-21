@@ -3,6 +3,7 @@ package clone.twitter.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,11 +21,11 @@ public class AppUser {
     private String username;
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts;
+    private List<Tweet> tweets = new ArrayList<>();
 
     @ManyToMany(mappedBy = "liked", cascade = CascadeType.ALL)
-    private List<Post> likedPosts;
+    private List<Tweet> likedTweets = new ArrayList<>();
 
     @ManyToMany(mappedBy = "disliked", cascade = CascadeType.ALL)
-    private List<Post> dislikedPosts;
+    private List<Tweet> dislikedTweets = new ArrayList<>();;
 }

@@ -29,7 +29,7 @@ public class AppUserController {
     public ResponseEntity<AppUserDTO> createNewUser(@RequestBody AppUserDTO appUserDTO) {
         AppUserDTO createdAppUserDTO = appUserService.createAppUser(appUserDTO);
         UUID id = createdAppUserDTO.getId();
-        return ResponseEntity.created(URI.create("/user/{id}")).body(createdAppUserDTO);
+        return ResponseEntity.created(URI.create("/user/" + id)).body(createdAppUserDTO);
     }
 
     @PutMapping("/user")
