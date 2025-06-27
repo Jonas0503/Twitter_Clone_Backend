@@ -30,7 +30,6 @@ public class TweetService {
 
     @Transactional
     public TweetDTO createTweet(TweetDTO tweetDTO) {
-        System.out.println(tweetDTO);
         if (tweetRepository.existsById(tweetDTO.getId())) {
             throw new EntityAlreadyExistsException(tweetDTO.getId());
         }

@@ -2,15 +2,29 @@ package clone.twitter.service.mapping;
 
 import clone.twitter.dto.AppUserDTO;
 import clone.twitter.dto.TweetDTO;
+import clone.twitter.exceptions.EntityNotFoundException;
 import clone.twitter.models.AppUser;
 import clone.twitter.models.Tweet;
+import clone.twitter.repo.AppUserRepository;
+import clone.twitter.repo.TweetRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class MapToEntity {
+
+    private AppUserRepository appUserRepository;
+    private TweetRepository tweetRepository;
+
+    @Autowired
+    public MapToEntity(AppUserRepository appUserRepository, TweetRepository tweetRepository) {
+        this.appUserRepository = appUserRepository;
+        this.tweetRepository = tweetRepository;
+    }
 
     public AppUser mapToAppUserEntity(AppUserDTO appUserDTO) {
         AppUser appUser = new AppUser();
@@ -18,9 +32,9 @@ public class MapToEntity {
         appUser.setId(appUserDTO.getId());
         appUser.setImgPath(appUserDTO.getImgPath());
         appUser.setUsername(appUserDTO.getUsername());
-        appUser.setTweets(createTweetEntityList(appUserDTO.getCreatedTweets()));
-        appUser.setLikedTweets(createTweetEntityList(appUserDTO.getLikedTweets()));
-        appUser.setDislikedTweets(createTweetEntityList(appUserDTO.getDislikedTweets()));
+        appUser.setTweets(tweetRepository.findAllTweetsByAppUserId(appUserDTO.getId()));
+        appUser.setLikedTweets(tweetRepository.findLikedTweetsByAppUserId(appUserDTO.getId()));
+        appUser.setDislikedTweets(tweetRepository.findDislikedTweetsByAppUserId(appUserDTO.getId()));
 
         return appUser;
     }
@@ -30,22 +44,32 @@ public class MapToEntity {
 
         tweet.setId(tweetDTO.getId());
         tweet.setText(tweetDTO.getText());
-        tweet.setAppUser(mapToAppUserEntity(tweetDTO.getCreator()));
-        tweet.setLiked(createAppUserEntityList(tweetDTO.getLikedUserDTOs()));
-        tweet.setDisliked(createAppUserEntityList(tweetDTO.getDislikedUserDTOs()));
 
-        if (tweetDTO.getParentTweet() == null) {
+        Optional<AppUser> appUserOptional = appUserRepository.findById(tweetDTO.getCreatorID());
+        if (appUserOptional.isEmpty()) {
+            throw new EntityNotFoundException(tweetDTO.getCreatorID());
+        }
+        else {
+            tweet.setAppUser(appUserOptional.get());
+        }
+
+        tweet.setLiked(appUserRepository.findLikedAppUsersByTweetID(tweetDTO.getId()));
+        tweet.setDisliked(appUserRepository.findDislikedAppUsersByTweetID(tweetDTO.getId()));
+
+        if (tweetDTO.getParentTweetID() == null) {
             tweet.setParent(null);
         }
         else {
-            tweet.setParent(mapToTweetEntity(tweetDTO.getParentTweet()));
+            Optional<Tweet> tweetParentOptional = tweetRepository.findById(tweetDTO.getParentTweetID());
+            if (tweetParentOptional.isEmpty()) {
+                throw new EntityNotFoundException(tweetDTO.getParentTweetID());
+            }
+            else {
+                tweet.setParent(tweetParentOptional.get());
+            }
         }
 
-        List<Tweet> tweetEntityList = new ArrayList<>();
-        for (TweetDTO comment : tweetDTO.getComments()) {
-            tweetEntityList.add(mapToTweetEntity(comment));
-        }
-        tweet.setComments(tweetEntityList);
+        tweet.setComments(tweetRepository.findFirstLevelCommentsByTweetID(tweetDTO.getId()));
 
         return tweet;
     }

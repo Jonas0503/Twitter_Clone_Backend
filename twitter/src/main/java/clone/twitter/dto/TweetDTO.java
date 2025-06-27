@@ -11,13 +11,13 @@ public class TweetDTO {
 
     private String text;
 
-    private AppUserDTO creator;
+    private UUID creatorID;
 
-    private List<AppUserDTO> likedUserDTOs;
+    private List<UUID> likedUserIDs;
 
-    private List<AppUserDTO> dislikedUserDTOs;
+    private List<UUID> dislikedUserIDs;
 
-    private TweetDTO parentTweet;
+    private UUID parentTweetID;
 
-    private List<TweetDTO> comments;
+    private List<UUID> commentIDs;
 }

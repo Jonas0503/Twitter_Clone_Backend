@@ -2,7 +2,7 @@ package clone.twitter.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,10 @@ import java.util.UUID;
 
 @Table(name = "tweet")
 @Entity
-@Data
+@EqualsAndHashCode
+@Getter
+@Setter
+@NoArgsConstructor
 public class Tweet {
 
     @Id

@@ -1,7 +1,7 @@
 package clone.twitter.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,10 @@ import java.util.UUID;
 
 @Table(name = "app_user")
 @Entity
-@Data
+@EqualsAndHashCode
+@Getter
+@Setter
+@NoArgsConstructor
 public class AppUser {
 
     @Id
@@ -27,5 +30,11 @@ public class AppUser {
     private List<Tweet> likedTweets = new ArrayList<>();
 
     @ManyToMany(mappedBy = "disliked", cascade = CascadeType.ALL)
-    private List<Tweet> dislikedTweets = new ArrayList<>();;
+    private List<Tweet> dislikedTweets = new ArrayList<>();
+
+    // TODO: Bei allen Entities und DTOs toString anpassen (StackOverflow)
+//    @Override
+//    public String toString() {
+//        tweets.
+//    }
 }

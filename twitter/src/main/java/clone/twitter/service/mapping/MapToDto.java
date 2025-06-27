@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class MapToDto {
@@ -18,9 +19,9 @@ public class MapToDto {
         appUserDTO.setId(appUser.getId());
         appUserDTO.setImgPath(appUser.getImgPath());
         appUserDTO.setUsername(appUser.getUsername());
-        appUserDTO.setCreatedTweets(createTweetDTOList(appUser.getTweets()));
-        appUserDTO.setLikedTweets(createTweetDTOList(appUser.getLikedTweets()));
-        appUserDTO.setDislikedTweets(createTweetDTOList(appUser.getDislikedTweets()));
+        appUserDTO.setCreatedTweetIDs(createTweetIDList(appUser.getTweets()));
+        appUserDTO.setLikedTweetIDs(createTweetIDList(appUser.getLikedTweets()));
+        appUserDTO.setDislikedTweetIDs(createTweetIDList(appUser.getDislikedTweets()));
 
         return appUserDTO;
     }
@@ -30,43 +31,32 @@ public class MapToDto {
 
         tweetDTO.setId(tweet.getId());
         tweetDTO.setText(tweet.getText());
-        tweetDTO.setCreator(mapToAppUserDTO(tweet.getAppUser()));
-        tweetDTO.setLikedUserDTOs(createAppUserDTOList(tweet.getLiked()));
-        tweetDTO.setDislikedUserDTOs(createAppUserDTOList(tweet.getDisliked()));
-
-        if (tweet.getParent() == null) {
-            tweetDTO.setParentTweet(null);
-        }
-        else {
-            tweetDTO.setParentTweet(mapToTweetDTO(tweet.getParent()));
-        }
-
-        List<TweetDTO> tweetDTOList = new ArrayList<>();
-        for (Tweet comment : tweet.getComments()) {
-            tweetDTOList.add(mapToTweetDTO(comment));
-        }
-        tweetDTO.setComments(tweetDTOList);
+        tweetDTO.setCreatorID(tweet.getAppUser().getId());
+        tweetDTO.setLikedUserIDs(createAppUserIDList(tweet.getLiked()));
+        tweetDTO.setDislikedUserIDs(createAppUserIDList(tweet.getDisliked()));
+        tweetDTO.setParentTweetID(tweet.getParent() != null ? tweet.getParent().getId() : null);
+        tweetDTO.setCommentIDs(createTweetIDList(tweet.getComments()));
 
         return tweetDTO;
     }
 
-    public List<AppUserDTO> createAppUserDTOList(List<AppUser> appUserList) {
-        List<AppUserDTO> appUserDTOList = new ArrayList<>();
+    public List<UUID> createAppUserIDList(List<AppUser> appUserList) {
+        List<UUID> appUserIDList = new ArrayList<>();
 
         for (AppUser appUser : appUserList) {
-            appUserDTOList.add(mapToAppUserDTO(appUser));
+            appUserIDList.add(appUser.getId());
         }
 
-        return appUserDTOList;
+        return appUserIDList;
     }
 
-    public List<TweetDTO> createTweetDTOList(List<Tweet> tweetList) {
-        List<TweetDTO> tweetDTOList = new ArrayList<>();
+    public List<UUID> createTweetIDList(List<Tweet> tweetList) {
+        List<UUID> tweetIDList = new ArrayList<>();
 
         for (Tweet tweet : tweetList) {
-            tweetDTOList.add(mapToTweetDTO(tweet));
+            tweetIDList.add(tweet.getId());
         }
 
-        return tweetDTOList;
+        return tweetIDList;
     }
 }
