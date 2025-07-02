@@ -32,9 +32,30 @@ public class AppUser {
     @ManyToMany(mappedBy = "disliked", cascade = CascadeType.ALL)
     private List<Tweet> dislikedTweets = new ArrayList<>();
 
-    // TODO: Bei allen Entities und DTOs toString anpassen (StackOverflow)
-//    @Override
-//    public String toString() {
-//        tweets.
-//    }
+    @Override
+    public String toString() {
+        List<UUID> tweetIDs = new ArrayList<>();
+        for (Tweet tweet : getTweets()) {
+            tweetIDs.add(tweet.getId());
+        }
+
+        List<UUID> likedTweetIDs = new ArrayList<>();
+        for (Tweet tweet : getTweets()) {
+            likedTweetIDs.add(tweet.getId());
+        }
+
+        List<UUID> dislikedTweetIDs = new ArrayList<>();
+        for (Tweet tweet : getTweets()) {
+            dislikedTweetIDs.add(tweet.getId());
+        }
+
+        return "AppUser("
+                + getId() + ", "
+                + getImgPath() + ", "
+                + getUsername() + ", "
+                + tweetIDs + ", "
+                + likedTweetIDs + ", "
+                + dislikedTweetIDs +
+                ")";
+    }
 }

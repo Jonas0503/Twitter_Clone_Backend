@@ -49,4 +49,17 @@ public class Tweet {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tweet> comments = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Tweet("
+                + getId() + ", "
+                + getText() + ", "
+                + getAppUser() + ", "
+                + getLiked() + ", "
+                + getDisliked() + ", "
+                + getParent() + ", "
+                + getComments() +
+                ")";
+    }
 }

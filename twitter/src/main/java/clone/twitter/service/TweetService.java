@@ -38,8 +38,6 @@ public class TweetService {
             tweet.setId(null);
             Tweet createdTweet = tweetRepository.save(tweet);
 
-            System.out.println(createdTweet);
-
             return mapToDto.mapToTweetDTO(createdTweet);
         }
     }
