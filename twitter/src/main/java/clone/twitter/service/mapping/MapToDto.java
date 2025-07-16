@@ -40,7 +40,17 @@ public class MapToDto {
         return tweetDTO;
     }
 
-    public List<UUID> createAppUserIDList(List<AppUser> appUserList) {
+    public List<TweetDTO> mapToTweetDTOList(List<Tweet> tweetList) {
+        List<TweetDTO> tweetDTOList = new ArrayList<>();
+
+        for (Tweet tweet : tweetList) {
+            tweetDTOList.add(mapToTweetDTO(tweet));
+        }
+
+        return tweetDTOList;
+    }
+
+    private List<UUID> createAppUserIDList(List<AppUser> appUserList) {
         List<UUID> appUserIDList = new ArrayList<>();
 
         for (AppUser appUser : appUserList) {
@@ -50,7 +60,7 @@ public class MapToDto {
         return appUserIDList;
     }
 
-    public List<UUID> createTweetIDList(List<Tweet> tweetList) {
+    private List<UUID> createTweetIDList(List<Tweet> tweetList) {
         List<UUID> tweetIDList = new ArrayList<>();
 
         for (Tweet tweet : tweetList) {
