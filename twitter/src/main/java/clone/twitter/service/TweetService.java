@@ -1,9 +1,12 @@
 package clone.twitter.service;
 
+import clone.twitter.dto.AppUserDTO;
 import clone.twitter.dto.TweetDTO;
 import clone.twitter.exceptions.EntityAlreadyExistsException;
 import clone.twitter.exceptions.EntityNotFoundException;
+import clone.twitter.models.AppUser;
 import clone.twitter.models.Tweet;
+import clone.twitter.repo.AppUserRepository;
 import clone.twitter.repo.TweetRepository;
 import clone.twitter.service.mapping.MapToDto;
 import clone.twitter.service.mapping.MapToEntity;
@@ -20,12 +23,14 @@ public class TweetService {
     private MapToEntity mapToEntity;
     private MapToDto mapToDto;
     private TweetRepository tweetRepository;
+    private AppUserRepository appUserRepository;
 
     @Autowired
-    public TweetService(MapToEntity mapToEntity, MapToDto mapToDto, TweetRepository tweetRepository) {
+    public TweetService(MapToEntity mapToEntity, MapToDto mapToDto, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
         this.mapToEntity = mapToEntity;
         this.mapToDto = mapToDto;
         this.tweetRepository = tweetRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @Transactional
@@ -70,11 +75,38 @@ public class TweetService {
 
     @Transactional
     public void deleteTweet(UUID uuid) {
-        if (tweetRepository.existsById(uuid)) {
-            tweetRepository.deleteById(uuid);
+        tweetRepository.deleteById(uuid);
+    }
+
+    @Transactional
+    public void updateLikesOnTweet(UUID tweetID, UUID appUserID) {
+        if (!tweetRepository.existsById(tweetID)) {
+            throw new EntityNotFoundException(tweetID);
         }
-        else {
-            throw new EntityNotFoundException(uuid);
+        if (!appUserRepository.existsById(appUserID)) {
+            throw new EntityNotFoundException(appUserID);
         }
+        if (!tweetRepository.alreadyLiked(tweetID, appUserID).isEmpty()) {
+            throw new RuntimeException("Already liked");
+        }
+
+        tweetRepository.deleteDisliked(tweetID, appUserID);
+        tweetRepository.saveLiked(tweetID, appUserID);
+    }
+
+    @Transactional
+    public void updateDislikesOnTweet(UUID tweetID, UUID appUserID) {
+        if (!tweetRepository.existsById(tweetID)) {
+            throw new EntityNotFoundException(tweetID);
+        }
+        if (!appUserRepository.existsById(appUserID)) {
+            throw new EntityNotFoundException(appUserID);
+        }
+        if (!tweetRepository.alreadyDisliked(tweetID, appUserID).isEmpty()) {
+            throw new RuntimeException("Already disliked");
+        }
+
+        tweetRepository.deleteLiked(tweetID, appUserID);
+        tweetRepository.saveDisliked(tweetID, appUserID);
     }
 }

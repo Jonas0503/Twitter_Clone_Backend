@@ -1,6 +1,8 @@
 package clone.twitter.controller;
 
+import clone.twitter.dto.AppUserDTO;
 import clone.twitter.dto.TweetDTO;
+import clone.twitter.models.ActionOnTweet;
 import clone.twitter.service.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +44,16 @@ public class TweetController {
     @DeleteMapping("/tweet/{id}")
     public ResponseEntity<?> deleteTweet(@PathVariable UUID id) {
         tweetService.deleteTweet(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/tweet/{tweetID}/user/{userID}")
+    public ResponseEntity<?> actionOnTweet(@PathVariable UUID tweetID, @PathVariable UUID userID, @RequestParam(name = "action") ActionOnTweet action) {
+        switch (action) {
+            case LIKE -> tweetService.updateLikesOnTweet(tweetID, userID);
+            case DISLIKE -> tweetService.updateDislikesOnTweet(tweetID, userID);
+        }
+
         return ResponseEntity.noContent().build();
     }
 }

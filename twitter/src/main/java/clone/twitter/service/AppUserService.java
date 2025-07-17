@@ -77,12 +77,7 @@ public class AppUserService {
 
     @Transactional
     public void deleteAppUser(UUID uuid) {
-        if (appUserRepository.existsById(uuid)) {
-            appUserRepository.deleteById(uuid);
-        }
-        else {
-            throw new EntityNotFoundException(uuid);
-        }
+        appUserRepository.deleteById(uuid);
     }
 
     @Transactional
