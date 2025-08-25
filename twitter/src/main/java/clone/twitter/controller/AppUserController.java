@@ -32,8 +32,7 @@ public class AppUserController {
     @PostMapping("/user")
     public ResponseEntity<AppUserDTO> createNewUser(@RequestBody AppUserDTO appUserDTO) {
         AppUserDTO createdAppUserDTO = appUserService.createAppUser(appUserDTO);
-        UUID id = createdAppUserDTO.getId();
-        return ResponseEntity.created(URI.create("/user/" + id)).body(createdAppUserDTO);
+        return ResponseEntity.created(URI.create("/user/" + createdAppUserDTO.getId())).body(createdAppUserDTO);
     }
 
     @PutMapping("/user")
