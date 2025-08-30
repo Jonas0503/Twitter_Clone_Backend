@@ -155,4 +155,6 @@ public class AppUserControllerTests {
         mockMvc.perform(delete("/user/" + id))
                 .andExpect(status().isNoContent());
     }
+
+    // TODO: Als nächstes den AppUserService testen
 }
