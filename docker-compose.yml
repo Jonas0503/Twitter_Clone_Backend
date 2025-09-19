@@ -1,0 +1,21 @@
+services:
+  twitter-clone-backend:
+    build:
+      context: ./twitter
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/twitter_db
+      SPRING_DATASOURCE_USERNAME: jonas
+      SPRING_DATASOURCE_PASSWORD: passwort
+
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: twitter_db
+      POSTGRES_USER: jonas
+      POSTGRES_PASSWORD: passwort
+    ports:
+      - "5432:5432"
