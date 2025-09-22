@@ -1,5 +1,6 @@
 services:
   twitter-clone-backend:
+    container_name: twitter-clone-backend
     build:
       context: ./twitter
     ports:
@@ -13,9 +14,18 @@ services:
 
   database:
     image: postgres:17-alpine
+    container_name: twitter-clone-database
     environment:
       POSTGRES_DB: twitter_db
       POSTGRES_USER: jonas
       POSTGRES_PASSWORD: passwort
     ports:
       - "5432:5432"
+
+  twitter-clone-frontend:
+    container_name: twitter-clone-frontend
+    image: twitter-clone-frontend
+    ports:
+      - "4200:4200"
+    depends_on:
+      - twitter-clone-backend
