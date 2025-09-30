@@ -10,6 +10,7 @@ import clone.twitter.repo.TweetRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +45,14 @@ public class MapToEntity {
 
         tweet.setId(tweetDTO.getId());
         tweet.setText(tweetDTO.getText());
+
+        // NULL if a new Tweet is created
+        if (tweetDTO.getCreatedAt() == null) {
+            tweet.setCreatedAt(Instant.now());
+        }
+        else {
+            tweet.setCreatedAt(tweetDTO.getCreatedAt());
+        }
 
         Optional<AppUser> appUserOptional = appUserRepository.findById(tweetDTO.getCreatorID());
         if (appUserOptional.isEmpty()) {

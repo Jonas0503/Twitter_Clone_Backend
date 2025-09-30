@@ -12,7 +12,12 @@ import clone.twitter.service.mapping.MapToDto;
 import clone.twitter.service.mapping.MapToEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -58,6 +63,12 @@ public class TweetService {
             Tweet tweet = postOptional.get();
             return mapToDto.mapToTweetDTO(tweet);
         }
+    }
+
+    @Transactional
+    public Page<TweetDTO> getAllTweetsByPage(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
+        return tweetRepository.findAll(pageable).map(tweet -> mapToDto.mapToTweetDTO(tweet));
     }
 
     @Transactional

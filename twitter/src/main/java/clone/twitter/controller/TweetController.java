@@ -5,6 +5,7 @@ import clone.twitter.dto.TweetDTO;
 import clone.twitter.models.ActionOnTweet;
 import clone.twitter.service.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,15 @@ public class TweetController {
     public ResponseEntity<TweetDTO> getTweet(@PathVariable UUID id) {
         TweetDTO tweetDTO = tweetService.readTweet(id);
         return ResponseEntity.ok(tweetDTO);
+    }
+
+    @GetMapping("/tweet")
+    public ResponseEntity<Page<TweetDTO>> getAllTweetsByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "25") int size
+    ) {
+        Page<TweetDTO> tweetDTOPage = tweetService.getAllTweetsByPage(page, size);
+        return ResponseEntity.ok(tweetDTOPage);
     }
 
     @PostMapping("/tweet")

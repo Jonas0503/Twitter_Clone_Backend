@@ -31,6 +31,7 @@ public class MapToDto {
 
         tweetDTO.setId(tweet.getId());
         tweetDTO.setText(tweet.getText());
+        tweetDTO.setCreatedAt(tweet.getCreatedAt());
         tweetDTO.setCreatorID(tweet.getAppUser().getId());
         tweetDTO.setLikedUserIDs(createAppUserIDList(tweet.getLiked()));
         tweetDTO.setDislikedUserIDs(createAppUserIDList(tweet.getDisliked()));

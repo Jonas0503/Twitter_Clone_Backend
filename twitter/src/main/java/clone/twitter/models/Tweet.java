@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +24,8 @@ public class Tweet {
 
     @Size(min = 1, max = 256)
     private String text;
+
+    private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name = "app_user_id")

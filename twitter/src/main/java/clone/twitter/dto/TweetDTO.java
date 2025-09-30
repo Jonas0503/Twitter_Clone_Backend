@@ -2,6 +2,7 @@ package clone.twitter.dto;
 
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,6 +11,8 @@ public class TweetDTO {
     private UUID id;
 
     private String text;
+
+    private Instant createdAt;
 
     private UUID creatorID;
 
